@@ -11,6 +11,7 @@ import io
 import os
 from bs4 import BeautifulSoup
 from docx import Document
+from docx import image
 from docx.shared import Inches
 from PIL import Image
 
@@ -27,7 +28,7 @@ class SpiderRenren(object):
         }
         url_3g = "http://3g.renren.com/login.do?autoLogin=true&&fx=0"
         data = {'email': "renggang@sina.com",
-                'password': 'renren1234'}
+                'password': '---'}
         # 进行登录，并保存cookie
         self.req = requests.Session()
         login_res = self.req.post(url_3g, data=data, headers=self.headers)
@@ -75,9 +76,14 @@ class SpiderRenren(object):
                 # 判断是否有下一张，如果有，会继续循环
                 is_photo_next = True
                 photo_current_bs = photo_list_bs
+                id = 0
                 while is_photo_next:
                     photo_title = \
                         re.split("\s+", photo_current_bs.select('div.sec')[2].select('p')[1].getText().strip())[0]
+                    # 有可能出现没有标题的图片，用自增的id表示
+                    if photo_title == "小图":
+                        photo_title = str(id)
+                        id += 1
                     photo_date_str_list = re.split("\s+|:",
                                                    photo_current_bs.select('div.sec')[2].select('p')[
                                                        2].getText().strip())
@@ -88,27 +94,16 @@ class SpiderRenren(object):
                     document.add_paragraph(photo_date)
                     img_url = photo_current_bs.select('div.sec')[2].select('p')[1].select('a')[-1].get('href')
                     photo_content = self._get_img_via_url(img_url)
-                    document.add_picture(photo_content, width=Inches(6))
+                    try:
+                        document.add_picture(photo_content, width=Inches(6))
+                    except image.exceptions.UnrecognizedImageError:
+                        # img无法下载，forbidden403
+                        pass
                     document.add_heading('好友评论', level=1)
                     # 获取评论
                     try:
                         photo_comment_list = photo_current_bs.select('div.list')[0].select('div')
-                        for photo_comment in photo_comment_list:
-                            for comment in photo_comment.contents:
-                                if comment.name == "a":
-                                    document.add_paragraph(comment.getText())
-                                elif comment.name == "br":
-                                    continue
-                                elif comment.name == "p":
-                                    document.add_paragraph(' '.join(re.split('\s+', comment.getText().strip())[0:2]))
-                                elif comment.name == "img":
-                                    # 表情
-                                    img_url = comment.get('src')
-                                    photo_content = self._get_img_via_url(img_url)
-                                    document.add_picture(photo_content, width=Inches(0.2))
-                                else:
-                                    if comment.strip():
-                                        document.add_paragraph(comment.strip())
+                        self._process_comments(document, photo_comment_list)
                     except IndexError:
                         # no comments
                         pass
@@ -136,7 +131,6 @@ class SpiderRenren(object):
                 photos_current_bs = photos_next_bs
 
     def get_blog(self):
-        global img_io
         # 获取日志
         blog_home_elem = self.home_bs.select('table')[2].select('tr')[0].select('td')[0]
         blog_home_url = blog_home_elem.select('a')[0].get('href')
@@ -152,10 +146,8 @@ class SpiderRenren(object):
                 blog_url = blog_elem.select('a')[0].get('href')
                 blog_res = self.req.get(blog_url, headers=self.headers)
                 blog_bs = BeautifulSoup(blog_res.text, "html.parser")
-                blog_note = blog_bs.select('div.note')[0].getText()
-                blog_note_list = re.split("\s+", blog_note.strip())
-                blog_title = blog_note_list[0]
-                blog_date = blog_note_list[1] + " " + blog_note_list[2]
+                blog_title = blog_bs.select('div.note')[0].b.getText().strip()
+                blog_date = "".join(re.split("\s+", blog_bs.select('div.note')[0].p.getText().strip())[0:2])
                 document = Document()
                 document.add_heading(blog_title, 0)
                 document.add_paragraph(blog_date)
@@ -178,18 +170,13 @@ class SpiderRenren(object):
                     else:
                         document.add_paragraph(blog_content)
                 document.add_heading('好友评论', level=1)
-                blog_comment_list = blog_bs.select('div.list')[0].select('div')
-                for blog_comment in blog_comment_list:
-                    for comment in blog_comment.contents:
-                        if comment.name == "a":
-                            document.add_paragraph(comment.getText())
-                        elif comment.name == "br":
-                            pass
-                        elif comment.name == "p":
-                            document.add_paragraph(' '.join(re.split('\s+', comment.getText().strip())[0:2]))
-                        else:
-                            if comment.strip():
-                                document.add_paragraph(comment.strip())
+                # 获取评论
+                try:
+                    blog_comment_list = blog_bs.select('div.list')[0].select('div')
+                    self._process_comments(document, blog_comment_list)
+                except IndexError:
+                    # no comments
+                    pass
                 document.add_page_break()
                 document.save(blog_title + '.docx')
             is_next = True if blog_elem_list[-1].select('a')[0].get('title') == "下一页" else False
@@ -223,7 +210,25 @@ class SpiderRenren(object):
         img_io.seek(0)
         return img_io
 
+    def _process_comments(self, document, comment_list):
+        for comment_div in comment_list:
+            for comment in comment_div.contents:
+                if comment.name == "a":
+                    document.add_paragraph(comment.getText())
+                elif comment.name == "br":
+                    continue
+                elif comment.name == "p":
+                    document.add_paragraph(' '.join(re.split('\s+', comment.getText().strip())[0:2]))
+                elif comment.name == "img":
+                    # 表情
+                    img_url = comment.get('src')
+                    photo_content = self._get_img_via_url(img_url)
+                    document.add_picture(photo_content, width=Inches(0.2))
+                else:
+                    if comment.strip():
+                        document.add_paragraph(comment.strip())
+
 
 if __name__ == '__main__':
     s = SpiderRenren()
-    s.get_photo()
+    s.get_blog()
