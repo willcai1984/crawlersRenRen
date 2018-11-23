@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    spider.wechat.py
+    spider.wechat.py.py
     ~~~~~~~~~~~~~~
     :copyright:...
 """

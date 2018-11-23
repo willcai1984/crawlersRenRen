@@ -4,7 +4,7 @@
     ~~~~~~~~~~~~~~
     :copyright:...
 """
-from spider_renren import SpiderRenren
+from spiderrenren import SpiderRenren
 from util import RandomPasswd
 from util import ZipObj
 

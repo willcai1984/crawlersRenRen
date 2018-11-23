@@ -34,11 +34,11 @@ def index():
         # 拼接成字符串
         temp = ''.join(data)
         # 进行sha1加密
-        mysignature = hashlib.sha1(temp).hexdigest()
+        mysignature = hashlib.sha1(temp.encode('utf-8')).hexdigest()
         # 加密后的字符串可与signature对比，标识该请求来源于微信
         if my_signature == mysignature:
             return my_echostr
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', post=80, debug=True)
+    app.run(host='0.0.0.0', port=80, debug=True)
