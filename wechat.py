@@ -71,7 +71,7 @@ class Wechat(object):
         return "".join(xml)
 
 
-class WechatLogin(WechatAPI):
+class WechatLogin(Wechat):
     def get_code_url(self):
         """微信内置浏览器获取网页授权code的url"""
         url = self.config.defaults.get('wechat_browser_code') + (

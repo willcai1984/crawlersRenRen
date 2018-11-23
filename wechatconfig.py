@@ -12,9 +12,9 @@
 
 # ----------------------------------------------微信公众号---------------------------------------------- #
 # 公众号appid
-APPID = 'appid'
+APPID = 'wxf3869a2e18d1792e'
 # 公众号AppSecret
-APPSECRET = 'appsecret'
+APPSECRET = 'd700be05e6d8fd9de86d521aed281291'
 
 # ----------------------------------------------微信商户平台---------------------------------------------- #
 # 商户id
@@ -24,8 +24,8 @@ API_KEY = 'api秘钥'
 
 # ----------------------------------------------回调页面---------------------------------------------- #
 # 用户授权获取code后的回调页面，如果需要实现验证登录就必须填写
-REDIRECT_URI = 'http://www.show.netcome.net/index'
-PC_LOGIN_REDIRECT_URI = 'http://www.show.netcome.net/index'
+REDIRECT_URI = 'http://www.allmigrate.cn/index'
+PC_LOGIN_REDIRECT_URI = 'http://www.allmigrate.cn/index'
 
 defaults = {
     # 微信内置浏览器获取code微信接口
