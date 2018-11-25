@@ -55,7 +55,7 @@ def authorized():
     return resp
 
 
-@app.route("/weixin/", methods=["GET", "POST"])
+@app.route("/weixin", methods=["GET", "POST"])
 def weixin():
     if request.method == "GET":  # 判断请求方式是GET请求
         my_signature = request.args.get('signature')  # 获取携带的signature参数
