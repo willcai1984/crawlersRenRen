@@ -20,12 +20,10 @@ from weixin import Weixin, WeixinError
 from weixin.login import WeixinLogin
 
 app = Flask(__name__)
-# 具体导入配
-# 根据需求导入仅供参考
-app.config.fromobject(dict(WEIXIN_APP_ID='wxf3869a2e18d1792e', WEIXIN_APP_SECRET='d700be05e6d8fd9de86d521aed281291'))
 
-# 初始化微信
-weixin = Weixin(app)
+app_id = 'wxf3869a2e18d1792e'
+app_secret = 'd700be05e6d8fd9de86d521aed281291'
+wx_login = WeixinLogin(app_id, app_secret)
 
 
 @app.route("/login")
@@ -36,7 +34,7 @@ def login():
     if openid:
         return redirect(next)
     callback = url_for("authorized", next=next, _external=True)
-    url = weixin.authorize(callback, "snsapi_base")
+    url = wx_login.authorize(callback, "snsapi_base")
     return redirect(url)
 
 
@@ -47,7 +45,7 @@ def authorized():
     if not code:
         return "ERR_INVALID_CODE", 400
     next = request.args.get("next", "/")
-    data = weixin.access_token(code)
+    data = wx_login.access_token(code)
     openid = data.openid
     resp = redirect(next)
     expires = datetime.now() + timedelta(days=1)
