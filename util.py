@@ -12,6 +12,40 @@ import platform as pf
 import os
 import re
 import shutil
+import pymysql
+
+
+class SQLProcess(object):
+    def __init__(self, ip, user, passwd, db):
+        self.db = pymysql.connect(ip, user, passwd, db)
+        self.cursor = self.db.cursor()
+
+    def __del__(self):
+        self.cursor.close()
+        self.db.close()
+
+    def execute(self, sql):
+        try:
+            # 执行sql语句
+            self.cursor.execute(sql)
+            # 执行sql语句
+            self.db.commit()
+            return True
+        except:
+            # 发生错误时回滚
+            self.db.rollback()
+            return False
+
+    def select(self, sql):
+        try:
+            # 执行SQL语句
+            self.cursor.execute(sql)
+            # 获取所有记录列表
+            results = self.cursor.fetchall()
+            return results
+        except:
+            print("Error: unable to fetch data")
+            return False
 
 
 # 无法加密
@@ -39,7 +73,6 @@ class ZipProcess(object):
 
 
 class ZipObj(object):
-
     def __init__(self):
         pass
 
