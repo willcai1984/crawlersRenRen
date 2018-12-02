@@ -12,7 +12,8 @@ import os
 import re
 import shutil
 import pymysql
-from cos_lib3.cos import Cos
+from qcloud_cos.cos_client import CosClient
+from qcloud_cos.cos_request import UploadSliceFileRequest
 
 
 class SQLProcess(object):
@@ -146,12 +147,18 @@ def RandomPasswd(rang=None):
 
 class QCFile(object):
     def __init__(self):
-        cos = Cos(app_id=100008511249, secret_id='AKIDiFYeV8FcU6SYOy5UP5WigPt99uPenLo4',
-                  secret_key='9D4i8KOFtJWYP5YnpdEcmiQvCMRPDoEU', region='sh')
-        self.bucket = cos.get_bucket("yiqian-1253797768")
+        appid = 1253797768  # 替换为用户的appid
+        secret_id = 'AKIDVtkRyVEdu5tazQuOBqLUVQ9Ur694inrb'  # 替换为用户的secret_id
+        secret_key = '7FC0gFDz0zGqJANRM8AAwGYE7d1K0a1F'  # 替换为用户的secret_key
+        region = "shanghai"  # # 替换为用户的region，目前可以为 shanghai/guangzhou
+        self.cos_client = CosClient(appid, secret_id, secret_key, region)
+        # 设置要操作的bucket
+        self.bucket = "yiqian-1253797768"
 
-    def upload_slice_file(self, file_path, file_name, slice_size=1048576):
+    def upload_slice_file(self, file_path, file_name):
         # slice_size为分片大小，单位为Byte，有效值：1048576（1MB），如非必要，请勿修改！！
         # file_name为文件在bucket中存储的名称
         # self.bucket.upload_slice_file(file_path, slice_size, file_name)
-        self.bucket.upload_file(file_path, file_name)
+        request = UploadSliceFileRequest(self.bucket, file_name, file_path)
+        res = self.cos_client.upload_slice_file(request)
+        return res
