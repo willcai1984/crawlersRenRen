@@ -46,7 +46,7 @@ if __name__ == '__main__':
                 photo_file_name = 'renren-' + photo_folder + '.zip'
                 photo_r = q.upload_slice_file(photo_file_path, photo_file_name)
                 photo_url = "https://yiqian-1253797768.cos.ap-shanghai.myqcloud.com/" + photo_file_name
-                os.remove(photo_file_name)
+                os.remove(photo_file_path)
                 # 处理日志部分
                 blog_folder = s.get_blog()
                 blog_passwd = RandomPasswd(16)
@@ -56,7 +56,7 @@ if __name__ == '__main__':
                 blog_file_name = 'renren-' + blog_folder + '.zip'
                 blog_r = q.upload_slice_file(blog_file_path, blog_file_name)
                 blog_url = "https://yiqian-1253797768.cos.ap-shanghai.myqcloud.com/" + blog_file_name
-                os.remove(blog_file_name)
+                os.remove(blog_file_path)
                 # 查看detail表内是否有记录
                 sql4 = "select * from subscription_accountdetail where account_id=%s;" % account_id
                 r4 = sql.select(sql4)
