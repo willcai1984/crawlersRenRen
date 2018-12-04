@@ -6,6 +6,7 @@
 """
 import os
 import datetime
+import traceback
 from spiderrenren import SpiderRenren
 from util import RandomPasswd
 from util import ZipObj
@@ -37,22 +38,25 @@ if __name__ == '__main__':
                 r3 = sql.execute(sql3)
                 s = SpiderRenren(user, passwd)
                 z = ZipObj()
+                # 处理相册部分
                 photo_folder = s.get_photo()
                 photo_passwd = RandomPasswd(16)
-                print(photo_passwd)
                 z.enrypt_folder(photo_folder, photo_folder + '.zip', photo_passwd, True)
                 photo_file_path = photo_folder + '.zip'
                 photo_file_name = 'renren-' + photo_folder + '.zip'
                 photo_r = q.upload_slice_file(photo_file_path, photo_file_name)
                 photo_url = "https://yiqian-1253797768.cos.ap-shanghai.myqcloud.com/" + photo_file_name
+                os.remove(photo_file_name)
+                # 处理日志部分
                 blog_folder = s.get_blog()
                 blog_passwd = RandomPasswd(16)
-                print(blog_passwd)
+                # print(blog_passwd)
                 z.enrypt_folder(blog_folder, blog_folder + '.zip', blog_passwd, True)
                 blog_file_path = blog_folder + '.zip'
                 blog_file_name = 'renren-' + blog_folder + '.zip'
                 blog_r = q.upload_slice_file(blog_file_path, blog_file_name)
                 blog_url = "https://yiqian-1253797768.cos.ap-shanghai.myqcloud.com/" + blog_file_name
+                os.remove(blog_file_name)
                 # 查看detail表内是否有记录
                 sql4 = "select * from subscription_accountdetail where account_id=%s;" % account_id
                 r4 = sql.select(sql4)
@@ -72,7 +76,9 @@ if __name__ == '__main__':
                 r7 = sql.execute(sql7)
             except Exception as e:
                 # # 将对应account状态置为失败
-                sql8 = "update subscription_account set user_status=%s where id=%s;" % (3, account_id)
+                print(traceback.format_exc())
+                sql8 = "update subscription_account set user_status=%s,desc='%s' where id=%s;" % (
+                    3, traceback.format_exc(), account_id)
                 r8 = sql.execute(sql8)
         else:
             print("没有待爬取的帐户")
