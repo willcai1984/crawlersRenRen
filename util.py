@@ -149,10 +149,10 @@ def RandomPasswd(rang=None):
 
 class QCFile(object):
     def __init__(self):
-        appid = 1253797768  # 替换为用户的appid
-        secret_id = 'AKIDVtkRyVEdu5tazQuOBqLUVQ9Ur694inrb'  # 替换为用户的secret_id
-        secret_key = '7FC0gFDz0zGqJANRM8AAwGYE7d1K0a1F'  # 替换为用户的secret_key
-        region = "shanghai"  # # 替换为用户的region，目前可以为 shanghai/guangzhou
+        appid = 100008511249  # 替换为用户的appid
+        secret_id = 'AKIDiFYeV8FcU6SYOy5UP5WigPt99uPenLo4'  # 替换为用户的secret_id
+        secret_key = '9D4i8KOFtJWYP5YnpdEcmiQvCMRPDoEU'  # 替换为用户的secret_key
+        region = "ap-shanghai"  # # 替换为用户的region，目前可以为 shanghai/guangzhou
 
         # 设置要操作的bucket
         self.bucket = "yiqian-1253797768"
@@ -180,4 +180,5 @@ class QCFile(object):
             LocalFilePath=file_path,
             Key=file_name
         )
-        print(response['ETag'])
+        return response
+        # print(response['ETag'])
