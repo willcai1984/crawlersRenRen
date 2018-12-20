@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 logger.info("相册处理开始")
                 # 处理相册部分
                 photo_folder = s.get_photo()
-                photo_passwd = RandomPasswd(12)
+                photo_passwd = RandomPasswd(10)
                 z.enrypt_folder(photo_folder, photo_folder + '.zip', photo_passwd, True)
                 photo_file_path = photo_folder + '.zip'
                 photo_file_name = 'renren-' + photo_folder + '.zip'
@@ -70,7 +70,7 @@ if __name__ == '__main__':
                 logger.info("日志处理开始")
                 # 处理日志部分
                 blog_folder = s.get_blog()
-                blog_passwd = RandomPasswd(12)
+                blog_passwd = RandomPasswd(10)
                 # print(blog_passwd)
                 z.enrypt_folder(blog_folder, blog_folder + '.zip', blog_passwd, True)
                 blog_file_path = blog_folder + '.zip'
