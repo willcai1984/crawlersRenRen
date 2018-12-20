@@ -91,8 +91,8 @@ if __name__ == '__main__':
                 else:
                     logger.info("detail表内无数据，进行插入操作")
                     # insert
-                    sql6 = "INSERT INTO subscription_accountdetail  (account_id,open_id,blog_url,blog_pwd,photo_url,photo_pwd,is_pay,pay_serial_no,is_delete,create_time,update_time) VALUES (%s,'%s','%s','%s','%s','%s',%s,'%s',%s,'%s','%s');" % (
-                        account_id, open_id, blog_url, blog_passwd, photo_url, photo_passwd, 0, '', 0,
+                    sql6 = "INSERT INTO subscription_accountdetail  (account_id,open_id,blog_url,blog_pwd,photo_url,photo_pwd,is_pay,is_delete,create_time,update_time) VALUES (%s,'%s','%s','%s','%s','%s',%s,'%s',%s,'%s','%s');" % (
+                        account_id, open_id, blog_url, blog_passwd, photo_url, photo_passwd, 0, 0,
                         datetime.datetime.now(), datetime.datetime.now())
                     logger.info(sql6)
                     r6 = sql.execute(sql6)
